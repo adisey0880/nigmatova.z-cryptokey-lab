@@ -1,0 +1,11 @@
+{
+  "name": "nigmatova.z-cryptokey-lab",
+  "version": "1.0.0",
+  "description": "Разработка программного модуля для алгоритмов шифрования с открытым ключом — CryptoKey Lab",
+  "author": "Нигматова Зиеда",
+  "license": "MIT",
+  "scripts": {
+    "dev": "npx serve public -l 3000",
+    "start": "npx serve public"
+  }
+}

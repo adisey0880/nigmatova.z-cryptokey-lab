@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CryptoKey Lab — Программный модуль для алгоритмов шифрования с открытым ключом</title>
+  <meta name="description" content="Разработка программного модуля для алгоритмов шифрования с открытым ключом. Генерация ключей RSA, шифрование, расшифрование и цифровая подпись. Автор: Нигматова Зиеда." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>" />
+</head>
+<body>
+
+  <!-- ===== НАВИГАЦИЯ ===== -->
+  <nav class="navbar" id="navbar">
+    <div class="navbar-inner">
+      <a href="#" class="navbar-logo" onclick="navigate('home'); return false;">
+        <div class="logo-icon">🔐</div>
+        CryptoKey Lab
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#" data-section="home" class="active" onclick="navigate('home'); return false;">Главная</a></li>
+        <li><a href="#" data-section="keygen" onclick="navigate('keygen'); return false;">Ключи</a></li>
+        <li><a href="#" data-section="encrypt" onclick="navigate('encrypt'); return false;">Шифрование</a></li>
+        <li><a href="#" data-section="decrypt" onclick="navigate('decrypt'); return false;">Расшифрование</a></li>
+        <li><a href="#" data-section="sign" onclick="navigate('sign'); return false;">Подпись</a></li>
+        <li><a href="#" data-section="verify" onclick="navigate('verify'); return false;">Проверка</a></li>
+        <li><a href="#" data-section="theory" onclick="navigate('theory'); return false;">Теория</a></li>
+        <li><a href="#" data-section="about" onclick="navigate('about'); return false;">Об авторе</a></li>
+      </ul>
+      <button class="mobile-toggle" id="mobileToggle" aria-label="Меню">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== TOAST CONTAINER ===== -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <main>
+
+    <!-- ===== ГЛАВНАЯ ===== -->
+    <section class="section active" id="section-home">
+      <div class="hero">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <span class="pulse-dot"></span>
+            Web Crypto API
+          </div>
+          <h1>CryptoKey Lab</h1>
+          <p class="subtitle">Интерактивный симулятор шифрования с открытым ключом</p>
+          <p class="author">Автор: Нигматова Зиеда</p>
+          <p class="description">
+            Веб-приложение демонстрирует работу криптографии с открытым ключом:
+            генерацию ключей, шифрование, расшифрование и цифровую подпись.
+            Индивидуальный проект на тему: «Разработка программного модуля для алгоритмов шифрования с открытым ключом».
+          </p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" onclick="navigate('keygen')">
+              🔑 Генерация ключей
+            </button>
+            <button class="btn btn-secondary" onclick="navigate('theory')">
+              📖 Теория
+            </button>
+          </div>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card" onclick="navigate('keygen')">
+            <div class="f-icon">🔑</div>
+            <h3>Генерация ключей</h3>
+            <p>RSA-OAEP и RSA-PSS ключевые пары (2048 бит)</p>
+          </div>
+          <div class="feature-card" onclick="navigate('encrypt')">
+            <div class="f-icon">🔒</div>
+            <h3>Шифрование</h3>
+            <p>Шифрование данных открытым ключом RSA-OAEP</p>
+          </div>
+          <div class="feature-card" onclick="navigate('decrypt')">
+            <div class="f-icon">🔓</div>
+            <h3>Расшифрование</h3>
+            <p>Расшифрование закрытым ключом RSA-OAEP</p>
+          </div>
+          <div class="feature-card" onclick="navigate('sign')">
+            <div class="f-icon">✍️</div>
+            <h3>Цифровая подпись</h3>
+            <p>Создание подписи закрытым ключом RSA-PSS</p>
+          </div>
+          <div class="feature-card" onclick="navigate('verify')">
+            <div class="f-icon">✅</div>
+            <h3>Проверка подписи</h3>
+            <p>Верификация подписи открытым ключом RSA-PSS</p>
+          </div>
+          <div class="feature-card" onclick="navigate('theory')">
+            <div class="f-icon">📚</div>
+            <h3>Теория</h3>
+            <p>Основы криптографии с открытым ключом</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ГЕНЕРАЦИЯ КЛЮЧЕЙ ===== -->
+    <section class="section" id="section-keygen">
+      <div class="section-header">
+        <h2>🔑 Генерация ключей</h2>
+        <p>Создайте пару ключей для шифрования (RSA-OAEP) или цифровой подписи (RSA-PSS)</p>
+      </div>
+
+      <div class="keygen-grid">
+        <!-- RSA-OAEP -->
+        <div class="card" id="card-keygen-encrypt">
+          <div class="card-header">
+            <div class="card-icon">🔒</div>
+            <div>
+              <div class="card-title">RSA-OAEP</div>
+              <div class="card-subtitle">Шифрование / Расшифрование • 2048 бит • SHA-256</div>
+            </div>
+          </div>
+          <button class="btn btn-primary" id="btnGenEncryptKeys" onclick="generateEncryptionKeys()">
+            Сгенерировать ключи шифрования
+          </button>
+          <div id="encryptKeysOutput" style="display:none;">
+            <div class="output-area" style="margin-top:1.25rem;">
+              <div class="output-label">Открытый ключ (Public Key)</div>
+              <div class="output-text" id="encPublicKeyOutput"></div>
+              <div class="output-actions">
+                <button class="btn btn-copy" onclick="copyToClipboard('encPublicKeyOutput')">📋 Копировать</button>
+              </div>
+            </div>
+            <div class="output-area">
+              <div class="output-label">Закрытый ключ (Private Key)</div>
+              <div class="output-text" id="encPrivateKeyOutput"></div>
+              <div class="output-actions">
+                <button class="btn btn-copy" onclick="copyToClipboard('encPrivateKeyOutput')">📋 Копировать</button>
+              </div>
+            </div>
+            <div class="warning-box">
+              <span class="warning-icon">⚠️</span>
+              <p>Закрытый ключ нельзя передавать третьим лицам! Храните его в безопасном месте.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- RSA-PSS -->
+        <div class="card" id="card-keygen-sign">
+          <div class="card-header">
+            <div class="card-icon">✍️</div>
+            <div>
+              <div class="card-title">RSA-PSS</div>
+              <div class="card-subtitle">Подпись / Проверка • 2048 бит • SHA-256</div>
+            </div>
+          </div>
+          <button class="btn btn-primary" id="btnGenSignKeys" onclick="generateSigningKeys()">
+            Сгенерировать ключи подписи
+          </button>
+          <div id="signKeysOutput" style="display:none;">
+            <div class="output-area" style="margin-top:1.25rem;">
+              <div class="output-label">Открытый ключ (Public Key)</div>
+              <div class="output-text" id="signPublicKeyOutput"></div>
+              <div class="output-actions">
+                <button class="btn btn-copy" onclick="copyToClipboard('signPublicKeyOutput')">📋 Копировать</button>
+              </div>
+            </div>
+            <div class="output-area">
+              <div class="output-label">Закрытый ключ (Private Key)</div>
+              <div class="output-text" id="signPrivateKeyOutput"></div>
+              <div class="output-actions">
+                <button class="btn btn-copy" onclick="copyToClipboard('signPrivateKeyOutput')">📋 Копировать</button>
+              </div>
+            </div>
+            <div class="warning-box">
+              <span class="warning-icon">⚠️</span>
+              <p>Закрытый ключ нельзя передавать третьим лицам! Храните его в безопасном месте.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ШИФРОВАНИЕ ===== -->
+    <section class="section" id="section-encrypt">
+      <div class="section-header">
+        <h2>🔒 Шифрование</h2>
+        <p>Зашифруйте сообщение с помощью открытого ключа RSA-OAEP</p>
+      </div>
+
+      <div class="card" style="max-width: 800px; margin: 0 auto;">
+        <div class="card-header">
+          <div class="card-icon">🔒</div>
+          <div>
+            <div class="card-title">RSA-OAEP Шифрование</div>
+            <div class="card-subtitle">Введите сообщение и открытый ключ</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="encryptMessage">Сообщение</label>
+          <textarea class="form-control" id="encryptMessage" placeholder="Введите сообщение для шифрования..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="encryptPublicKey">Открытый ключ (PEM)</label>
+          <textarea class="form-control key-area" id="encryptPublicKey" placeholder="-----BEGIN PUBLIC KEY-----&#10;...&#10;-----END PUBLIC KEY-----"></textarea>
+        </div>
+
+        <button class="btn btn-primary" id="btnEncrypt" onclick="encryptMessage()">
+          🔒 Зашифровать
+        </button>
+
+        <div id="encryptOutput" style="display:none;">
+          <div class="output-area" style="margin-top:1.25rem;">
+            <div class="output-label">Зашифрованный текст (Base64)</div>
+            <div class="output-text" id="encryptedTextOutput"></div>
+            <div class="output-actions">
+              <button class="btn btn-copy" onclick="copyToClipboard('encryptedTextOutput')">📋 Копировать</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== РАСШИФРОВАНИЕ ===== -->
+    <section class="section" id="section-decrypt">
+      <div class="section-header">
+        <h2>🔓 Расшифрование</h2>
+        <p>Расшифруйте сообщение с помощью закрытого ключа RSA-OAEP</p>
+      </div>
+
+      <div class="card" style="max-width: 800px; margin: 0 auto;">
+        <div class="card-header">
+          <div class="card-icon">🔓</div>
+          <div>
+            <div class="card-title">RSA-OAEP Расшифрование</div>
+            <div class="card-subtitle">Введите зашифрованный текст и закрытый ключ</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="decryptCipher">Зашифрованный текст (Base64)</label>
+          <textarea class="form-control" id="decryptCipher" placeholder="Вставьте зашифрованный текст в формате Base64..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="decryptPrivateKey">Закрытый ключ (PEM)</label>
+          <textarea class="form-control key-area" id="decryptPrivateKey" placeholder="-----BEGIN PRIVATE KEY-----&#10;...&#10;-----END PRIVATE KEY-----"></textarea>
+        </div>
+
+        <button class="btn btn-primary" id="btnDecrypt" onclick="decryptMessage()">
+          🔓 Расшифровать
+        </button>
+
+        <div id="decryptOutput" style="display:none;">
+          <div class="output-area" style="margin-top:1.25rem;">
+            <div class="output-label">Расшифрованное сообщение</div>
+            <div class="output-text" id="decryptedTextOutput"></div>
+            <div class="output-actions">
+              <button class="btn btn-copy" onclick="copyToClipboard('decryptedTextOutput')">📋 Копировать</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ПОДПИСЬ ===== -->
+    <section class="section" id="section-sign">
+      <div class="section-header">
+        <h2>✍️ Цифровая подпись</h2>
+        <p>Создайте цифровую подпись сообщения с помощью закрытого ключа RSA-PSS</p>
+      </div>
+
+      <div class="card" style="max-width: 800px; margin: 0 auto;">
+        <div class="card-header">
+          <div class="card-icon">✍️</div>
+          <div>
+            <div class="card-title">RSA-PSS Подпись</div>
+            <div class="card-subtitle">Введите сообщение и закрытый ключ подписи</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="signMessage">Сообщение</label>
+          <textarea class="form-control" id="signMessage" placeholder="Введите сообщение для подписи..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="signPrivateKey">Закрытый ключ подписи (PEM)</label>
+          <textarea class="form-control key-area" id="signPrivateKey" placeholder="-----BEGIN PRIVATE KEY-----&#10;...&#10;-----END PRIVATE KEY-----"></textarea>
+        </div>
+
+        <button class="btn btn-primary" id="btnSign" onclick="signMessage()">
+          ✍️ Создать подпись
+        </button>
+
+        <div id="signOutput" style="display:none;">
+          <div class="output-area" style="margin-top:1.25rem;">
+            <div class="output-label">Цифровая подпись (Base64)</div>
+            <div class="output-text" id="signatureOutput"></div>
+            <div class="output-actions">
+              <button class="btn btn-copy" onclick="copyToClipboard('signatureOutput')">📋 Копировать</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ПРОВЕРКА ПОДПИСИ ===== -->
+    <section class="section" id="section-verify">
+      <div class="section-header">
+        <h2>✅ Проверка подписи</h2>
+        <p>Проверьте цифровую подпись с помощью открытого ключа RSA-PSS</p>
+      </div>
+
+      <div class="card" style="max-width: 800px; margin: 0 auto;">
+        <div class="card-header">
+          <div class="card-icon">✅</div>
+          <div>
+            <div class="card-title">RSA-PSS Верификация</div>
+            <div class="card-subtitle">Введите сообщение, подпись и открытый ключ</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="verifyMessage">Сообщение</label>
+          <textarea class="form-control" id="verifyMessage" placeholder="Введите исходное сообщение..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="verifySignature">Подпись (Base64)</label>
+          <textarea class="form-control" id="verifySignature" placeholder="Вставьте подпись в формате Base64..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="verifyPublicKey">Открытый ключ подписи (PEM)</label>
+          <textarea class="form-control key-area" id="verifyPublicKey" placeholder="-----BEGIN PUBLIC KEY-----&#10;...&#10;-----END PUBLIC KEY-----"></textarea>
+        </div>
+
+        <button class="btn btn-primary" id="btnVerify" onclick="verifySignature()">
+          ✅ Проверить
+        </button>
+
+        <div id="verifyOutput" style="display:none;"></div>
+      </div>
+    </section>
+
+    <!-- ===== ТЕОРИЯ ===== -->
+    <section class="section" id="section-theory">
+      <div class="section-header">
+        <h2>📖 Теория</h2>
+        <p>Основы алгоритмов шифрования с открытым ключом</p>
+      </div>
+
+      <div class="theory-grid">
+        <div class="theory-card">
+          <h3><span class="t-icon">🔐</span> Асимметричное шифрование</h3>
+          <p>Асимметричное шифрование (шифрование с открытым ключом) — криптографическая система, использующая пару математически связанных ключей: открытый (public) и закрытый (private). Открытый ключ доступен всем и используется для шифрования, а закрытый хранится в секрете и служит для расшифрования. Безопасность основана на вычислительной сложности факторизации больших чисел.</p>
+        </div>
+        <div class="theory-card">
+          <h3><span class="t-icon">🌐</span> Открытый ключ (Public Key)</h3>
+          <p>Открытый ключ — ключ, который можно свободно распространять. Он используется для шифрования данных (отправитель шифрует сообщение открытым ключом получателя) и для проверки цифровой подписи. Безопасность системы основана на невозможности вычислить закрытый ключ из открытого за разумное время.</p>
+        </div>
+        <div class="theory-card">
+          <h3><span class="t-icon">🔑</span> Закрытый ключ (Private Key)</h3>
+          <p>Закрытый ключ — секретный ключ, который нельзя передавать третьим лицам. Используется для расшифрования данных, зашифрованных соответствующим открытым ключом, и для создания цифровой подписи. Компрометация закрытого ключа полностью нарушает безопасность системы.</p>
+        </div>
+        <div class="theory-card">
+          <h3><span class="t-icon">🔒</span> Алгоритм RSA-OAEP</h3>
+          <p>RSA-OAEP (Optimal Asymmetric Encryption Padding) — схема шифрования с открытым ключом на основе алгоритма RSA с дополнением OAEP. Обеспечивает защиту от атак с выбранным шифротекстом (CCA2). В данном модуле используется RSA-OAEP с длиной ключа 2048 бит и хеш-функцией SHA-256.</p>
+        </div>
+        <div class="theory-card">
+          <h3><span class="t-icon">✍️</span> Алгоритм RSA-PSS</h3>
+          <p>RSA-PSS (Probabilistic Signature Scheme) — вероятностная схема цифровой подписи на основе RSA. Обеспечивает доказуемую безопасность в модели случайного оракула. В данном модуле используется RSA-PSS с длиной ключа 2048 бит, хеш-функцией SHA-256 и длиной соли 32 байта.</p>
+        </div>
+        <div class="theory-card">
+          <h3><span class="t-icon">🌍</span> Практическое применение</h3>
+          <p>Алгоритмы шифрования с открытым ключом применяются в: протоколе HTTPS (TLS/SSL — защита веб-трафика), инфраструктуре открытых ключей (PKI), электронной цифровой подписи документов, защищённой электронной почте (S/MIME, PGP), блокчейне и криптовалютах, VPN-соединениях.</p>
+        </div>
+      </div>
+
+      <!-- Визуальные схемы -->
+      <div class="schema-container">
+        <div class="schema-card">
+          <h3>Схема шифрования с открытым ключом</h3>
+          <div class="schema-flow">
+            <div class="schema-step">
+              <span class="step-icon">📄</span>
+              <span class="step-label">Исходный текст</span>
+            </div>
+            <span class="schema-arrow">→</span>
+            <div class="schema-step">
+              <span class="step-icon">🌐</span>
+              <span class="step-label">Public Key</span>
+            </div>
+            <span class="schema-arrow">→</span>
+            <div class="schema-step">
+              <span class="step-icon">🔒</span>
+              <span class="step-label">Encryption</span>
+            </div>
+            <span class="schema-arrow">→</span>
+            <div class="schema-step">
+              <span class="step-icon">🔡</span>
+              <span class="step-label">Cipher</span>
+            </div>
+            <span class="schema-arrow">→</span>
+            <div class="schema-step">
+              <span class="step-icon">🔑</span>
+              <span class="step-label">Private Key</span>
+            </div>
+            <span class="schema-arrow">→</span>
+            <div class="schema-step">
+              <span class="step-icon">🔓</span>
+              <span class="step-label">Decryption</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="schema-card">
+          <h3>Схема цифровой подписи</h3>
+          <div class="schema-flow">
+            <div class="schema-step">
+              <span class="step-icon">📄</span>
+              <span class="step-label">Сообщение</span>
+            </div>
+            <span class="schema-arrow">→</span>
+            <div class="schema-step">
+              <span class="step-icon">🔑</span>
+              <span class="step-label">Private Key</span>
+            </div>
+            <span class="schema-arrow">→</span>
+            <div class="schema-step">
+              <span class="step-icon">✍️</span>
+              <span class="step-label">Signature</span>
+            </div>
+            <span class="schema-arrow">→</span>
+            <div class="schema-step">
+              <span class="step-icon">🌐</span>
+              <span class="step-label">Public Key</span>
+            </div>
+            <span class="schema-arrow">→</span>
+            <div class="schema-step">
+              <span class="step-icon">✅</span>
+              <span class="step-label">Verification</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Практическая значимость -->
+      <div class="significance-block">
+        <h3>📌 Практическая значимость</h3>
+        <p>Разработанное веб-приложение позволяет наглядно изучить принципы работы криптографии с открытым ключом. Программный модуль реализует основные алгоритмы асимметричного шифрования (RSA-OAEP) и цифровой подписи (RSA-PSS), демонстрируя полный цикл работы с ключами. Проект разработан студенткой Нигматовой Зиедой.</p>
+      </div>
+    </section>
+
+    <!-- ===== ОБ АВТОРЕ ===== -->
+    <section class="section" id="section-about">
+      <div class="section-header">
+        <h2>👤 Об авторе</h2>
+        <p>Информация о разработчике проекта</p>
+      </div>
+
+      <div class="about-card">
+        <div class="about-avatar">👩‍💻</div>
+        <h3>Нигматова Зиеда</h3>
+        <p>Нигматова Зиеда — разработчик данного проекта в области информационной безопасности. Проект «CryptoKey Lab» создан как индивидуальный проект на тему «Разработка программного модуля для алгоритмов шифрования с открытым ключом» и демонстрирует практическое применение асимметричной криптографии.</p>
+      </div>
+
+      <div class="significance-block">
+        <h3>📌 Практическая значимость</h3>
+        <p>Разработанное веб-приложение позволяет наглядно изучить принципы работы криптографии с открытым ключом. Программный модуль реализует основные алгоритмы асимметричного шифрования (RSA-OAEP) и цифровой подписи (RSA-PSS). Проект разработан студенткой Нигматовой Зиедой.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <p>CryptoKey Lab | Автор: <span>Нигматова Зиеда</span> | © 2026</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
